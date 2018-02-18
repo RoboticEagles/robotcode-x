@@ -22,8 +22,8 @@ public class DrivetrainSubsystem extends Subsystem {
     }
     
     public void setRightSpeed(double s) {
-		drivetrainFR.set(s);
-		drivetrainBR.set(s);
+		drivetrainFR.set(-s);
+		drivetrainBR.set(-s);
     }
     
     public void stop() {

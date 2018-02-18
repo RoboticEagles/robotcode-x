@@ -17,6 +17,7 @@ import org.usfirst.frc.team7299.robot.subsystems.ConveyorSubsystem;
 import org.usfirst.frc.team7299.robot.subsystems.DrivetrainSubsystem;
 import org.usfirst.frc.team7299.robot.subsystems.ElevatorSubsystem;
 import org.usfirst.frc.team7299.robot.subsystems.IntakeSubsystem;
+import org.usfirst.frc.team7299.robot.subsystems.PneumaticSubsystem;
 
 public class Robot extends TimedRobot {
 	//SendableChooser<Command> m_chooser = new SendableChooser<>();
@@ -28,6 +29,7 @@ public class Robot extends TimedRobot {
 	public static ConveyorSubsystem conveyor;
 	public static ElevatorSubsystem elevator;
 	public static ClimberSubsystem climber;
+	public static PneumaticSubsystem pneumatics;
 	public static OI oi;
 
 	@Override
@@ -37,6 +39,7 @@ public class Robot extends TimedRobot {
 		conveyor = new ConveyorSubsystem();
 		elevator = new ElevatorSubsystem();
 		climber = new ClimberSubsystem();
+		pneumatics = new PneumaticSubsystem();
 		oi = new OI();
 		teleopCmd = new TeleopCommand();
 		//chooser.addObject("My Auto", new MyAutoCommand());

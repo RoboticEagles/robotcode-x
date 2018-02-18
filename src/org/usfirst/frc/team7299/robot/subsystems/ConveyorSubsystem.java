@@ -11,8 +11,8 @@ public class ConveyorSubsystem extends Subsystem {
 	protected void initDefaultCommand() {}
 
     public void setSpeed(double s) {
-    		conveyorL.set(s);
-    		conveyorR.set(-s);
+    		conveyorL.set(-s);
+    		conveyorR.set(s);
     }
     
     public void stop() {
