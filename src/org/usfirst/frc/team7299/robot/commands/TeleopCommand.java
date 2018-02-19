@@ -8,7 +8,8 @@ import edu.wpi.first.wpilibj.command.Command;
 public class TeleopCommand extends Command {
 	public final double accel = 0.03;
 	public boolean slowmode = false;
-	public boolean sols = false;
+	public boolean isols = false;
+	public boolean rsols = false;
 	public double speedL = 0;
 	public double speedR = 0;
 	public boolean inflating = false;
@@ -51,12 +52,13 @@ public class TeleopCommand extends Command {
         	}
         	
         if(j.getRawButtonReleased(2)) {
-        		sols = !sols;
-        		Robot.pneumatics.setSolenoids(sols);
+        		isols = !isols;
+        		Robot.pneumatics.setIntakeSolenoid(isols);
         	}
         	
         	if(j.getRawButtonReleased(3)) {
-        		Robot.pneumatics.freeSolenoids();
+        		rsols = !rsols;
+        		Robot.pneumatics.setRampSolenoid(rsols);
         	}
         	
         	if(j.getRawButtonReleased(4)) {
