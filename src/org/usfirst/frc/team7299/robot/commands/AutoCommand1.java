@@ -32,7 +32,7 @@ public class AutoCommand1 extends Command {
     		if ('L' == 'L') {
     		  Robot.drivetrain.setLeftSpeed(1.0);
     		  Robot.drivetrain.setRightSpeed(0.5);
-    		  if( ahrs.getDisplacementX() == 168) {
+    		  if( ahrs.getDisplacementX() == 4.6) {
     			  Robot.drivetrain.setSpeed(0);
     		  }
     		}
