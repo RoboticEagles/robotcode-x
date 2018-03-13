@@ -17,13 +17,13 @@ public class DrivetrainSubsystem extends Subsystem {
     }
 
     public void setLeftSpeed(double s) {
-    		drivetrainFL.set(s);
-    		drivetrainBL.set(s);
+    		drivetrainFL.set(-s);
+    		drivetrainBL.set(-s);
     }
     
     public void setRightSpeed(double s) {
-		drivetrainFR.set(-s);
-		drivetrainBR.set(-s);
+		drivetrainFR.set(s);
+		drivetrainBR.set(s);
     }
     
     public void stop() {

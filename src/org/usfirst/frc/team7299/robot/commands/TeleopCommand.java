@@ -6,10 +6,11 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class TeleopCommand extends Command {
-	public final double accel = 0.03;
+	public final double accel = 0.02;
 	public boolean slowmode = false;
 	public boolean isols = false;
 	public boolean rsols = false;
+	public boolean asols = false;
 	public double speedL = 0;
 	public double speedR = 0;
 	public boolean inflating = false;
@@ -28,14 +29,14 @@ public class TeleopCommand extends Command {
     		double y = j.getRawAxis(1);
     		if(j.getRawButtonReleased(8)) slowmode = !slowmode;
     		double speedMultiplier = slowmode ? 0.5 : 1;
-    		double pL = ((y - x) / Math.sqrt(2)) * speedMultiplier * 0.75;
-    		double pR = ((y + x) / Math.sqrt(2)) * speedMultiplier * 0.75;
+    		double pL = ((y - x) / Math.sqrt(2)) * speedMultiplier * 0.65;
+    		double pR = ((y + x) / Math.sqrt(2)) * speedMultiplier * 0.65;
     		if(speedL < pL) speedL += accel;
     		else if(speedL > pL) speedL -= accel;
     		if(speedR < pR) speedR += accel;
     		else if(speedR > pR) speedR -= accel;
-    		Robot.intake.setSpeed((j.getRawButton(5) ? -1 : j.getRawAxis(2)) * speedMultiplier * 0.5);
-    		Robot.conveyor.setSpeed((j.getRawButton(6) ? -1 : j.getRawAxis(3)) * speedMultiplier);
+    		Robot.intake.setSpeed((j.getRawButton(5) ? -1 : j.getRawAxis(2)) * 0.5);
+    		Robot.conveyor.setSpeed((j.getRawButton(6) ? -1 : j.getRawAxis(3)));
     		if(j.getPOV() == 90) {
     			Robot.climber.setSpeed(1);
     		} else if(j.getPOV() == 270) {
@@ -45,25 +46,33 @@ public class TeleopCommand extends Command {
     		}
         	Robot.drivetrain.setLeftSpeed(speedL);
         	Robot.drivetrain.setRightSpeed(speedR);
-        	if(j.getRawButton(1)) {
-        		Robot.elevator.setSpeed(0.5);
-        	} else {
-        		Robot.elevator.setSpeed(0);
+        	
+        if(j.getRawButtonReleased(1)) {
+        		isols = !isols;
+        		Robot.pneumatics.setIntake(isols);
         	}
         	
-        if(j.getRawButtonReleased(2)) {
-        		isols = !isols;
-        		Robot.pneumatics.setIntakeSolenoid(isols);
+        	if(j.getRawButtonReleased(2)) {
+        		rsols = !rsols;
+        		Robot.pneumatics.setRamp(rsols);
         	}
+
+        	/*if(j.getRawButtonPressed(3)) {
+        		Robot.pneumatics.setAligner(true);
+    		}*/
         	
         	if(j.getRawButtonReleased(3)) {
-        		rsols = !rsols;
-        		Robot.pneumatics.setRampSolenoid(rsols);
-        	}
+        		asols = !asols;
+        		Robot.pneumatics.setAligner(asols);
+    		}
         	
         	if(j.getRawButtonReleased(4)) {
         		inflating = !inflating;
         		Robot.pneumatics.setInflating(inflating);
+        	}
+        	
+        	if(j.getRawButtonReleased(8)) {
+        		Robot.pneumatics.alignerOff();
         	}
     }
 

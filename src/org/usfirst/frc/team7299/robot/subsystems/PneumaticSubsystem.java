@@ -9,13 +9,15 @@ public class PneumaticSubsystem extends Subsystem {
 	Compressor compressor = new Compressor();
 	DoubleSolenoid intakeSolenoid = new DoubleSolenoid(0, 1);
 	DoubleSolenoid rampSolenoid = new DoubleSolenoid(2, 3);
+	DoubleSolenoid alignerSolenoid = new DoubleSolenoid(4, 5);
 	
 	@Override
 	protected void initDefaultCommand() {
-		compressor.setClosedLoopControl(true);
 		compressor.stop();
+		compressor.setClosedLoopControl(true);
 		intakeSolenoid.set(Value.kForward);
 		rampSolenoid.set(Value.kForward);
+		alignerSolenoid.set(Value.kReverse);
 	}
 	
 	public void setInflating(boolean y) {
@@ -26,12 +28,21 @@ public class PneumaticSubsystem extends Subsystem {
 		}
 	}
 	
-	public void setIntakeSolenoid(boolean y) {
+	public void setIntake(boolean y) {
 		intakeSolenoid.set(y ? Value.kForward : Value.kReverse);
 	}
-	
-	public void setRampSolenoid(boolean y) {
+
+	public void setRamp(boolean y) {
 		rampSolenoid.set(y ? Value.kForward : Value.kReverse);
 	}
+	
+	public void setAligner(boolean y) {
+		alignerSolenoid.set(y ? Value.kForward : Value.kReverse);
+	}
+	
+	public void alignerOff() {
+		alignerSolenoid.set(Value.kOff);
+	}
+	
 }
 
