@@ -12,5 +12,6 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/robotcode-x/dep/CTRE_Phoenix-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="var" path="USERLIBS_DIR/navx_frc.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
