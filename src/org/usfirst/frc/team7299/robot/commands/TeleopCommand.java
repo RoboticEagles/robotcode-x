@@ -16,64 +16,37 @@ public class TeleopCommand extends Command {
 	public boolean inflating = false;
 
     public TeleopCommand() {
-        requires(Robot.conveyor);
+        //requires(Robot.conveyor);
         requires(Robot.drivetrain);
-        requires(Robot.intake);
+        requires(Robot.elevator);
+        //requires(Robot.intake);
     }
 
     protected void initialize() {}
 
     protected void execute() {
     		Joystick j = Robot.oi.getJoystick();
-    		double x = j.getRawAxis(0);
-    		double y = j.getRawAxis(1);
-    		if(j.getRawButtonReleased(8)) slowmode = !slowmode;
-    		double speedMultiplier = slowmode ? 0.5 : 1;
-    		double pL = ((y - x) / Math.sqrt(2)) * speedMultiplier * 0.65;
-    		double pR = ((y + x) / Math.sqrt(2)) * speedMultiplier * 0.65;
-    		if(speedL < pL) speedL += accel;
-    		else if(speedL > pL) speedL -= accel;
-    		if(speedR < pR) speedR += accel;
-    		else if(speedR > pR) speedR -= accel;
-    		Robot.intake.setSpeed((j.getRawButton(5) ? -1 : j.getRawAxis(2)) * 0.5);
-    		Robot.conveyor.setSpeed((j.getRawButton(6) ? -1 : j.getRawAxis(3)));
-    		if(j.getPOV() == 90) {
-    			Robot.climber.setSpeed(1);
-    		} else if(j.getPOV() == 270) {
-    			Robot.climber.setSpeed(-1);
-    		} else {
-    			Robot.climber.setSpeed(0);
-    		}
-        	Robot.drivetrain.setLeftSpeed(speedL);
-        	Robot.drivetrain.setRightSpeed(speedR);
-        	
-        if(j.getRawButtonReleased(1)) {
-        		isols = !isols;
-        		Robot.pneumatics.setIntake(isols);
-        	}
-        	
-        	if(j.getRawButtonReleased(2)) {
-        		rsols = !rsols;
-        		Robot.pneumatics.setRamp(rsols);
-        	}
-
-        	/*if(j.getRawButtonPressed(3)) {
-        		Robot.pneumatics.setAligner(true);
-    		}*/
-        	
-        	if(j.getRawButtonReleased(3)) {
-        		asols = !asols;
-        		Robot.pneumatics.setAligner(asols);
-    		}
-        	
-        	if(j.getRawButtonReleased(4)) {
-        		inflating = !inflating;
-        		Robot.pneumatics.setInflating(inflating);
-        	}
-        	
-        	if(j.getRawButtonReleased(8)) {
-        		Robot.pneumatics.alignerOff();
-        	}
+    		boolean BA = j.getRawButton(1);
+    		boolean BB = j.getRawButton(2);
+    		boolean BX = j.getRawButton(3);
+    		double X1 = j.getRawAxis(0);
+    		double POV = j.getPOV();
+    		double SL = (BX? Math.pow(X1, 1/3) * -.35
+    				:((BA? 1 : (BB? -1 : 0))
+    				* Math.min(1, 1 - 2 * Math.pow(X1, 1/3) * .35)));
+    		double SR = (BX? Math.pow(X1, 1/3) * .35
+    				:((BA? 1 : (BB? -1 : 0))
+				* Math.min(1, 1 + 2 * Math.pow(X1, 1/3) * .35)));
+		if(speedR < SR) speedR = Math.round(speedR * 100) / 100 + accel;
+		else if(speedR > SR) speedR = Math.round(speedR * 100) / 100 - accel;
+		if(speedL < SL) speedL = Math.round(speedL * 100) / 100 + accel;
+		else if(speedL > SL) speedL = Math.round(speedL * 100) / 100 - accel;
+		
+		if(POV == 90) {
+			Robot.elevator.set(1);
+		} else if (POV == 270) {
+			Robot.elevator.set(-1);
+		}
     }
 
     protected boolean isFinished() {

@@ -1,13 +1,13 @@
 package org.usfirst.frc.team7299.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class DrivetrainSubsystem extends Subsystem {
-	Spark drivetrainFL = new Spark(0);
-	Spark drivetrainFR = new Spark(1);
-	Spark drivetrainBL = new Spark(2);
-	Spark drivetrainBR = new Spark(3);
+	Victor drivetrainFL = new Victor(6);
+	Victor drivetrainFR = new Victor(8);
+	Victor drivetrainBL = new Victor(5);
+	Victor drivetrainBR = new Victor(7);
 
     public void initDefaultCommand() {}
 
