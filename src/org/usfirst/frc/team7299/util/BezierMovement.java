@@ -6,6 +6,8 @@ public class BezierMovement {
 	private double[] b;
 	private double[] c;
 	private double[] d;
+	private double maxWheelSpeed;
+	private final double DELTA = 10E-3; 
 	private final double DSP = 24.5;
 	private final double DSPSQ = Math.pow(24.5, 2);
 	
@@ -13,12 +15,20 @@ public class BezierMovement {
 	public Function<Double, double[]> der1;
 	public Function<Double, double[]> der2;
 	
-	BezierMovement(double[] b, double[] c, double d[]) {
+	public BezierMovement(double[] b, double[] c, double d[]) {
 		this.b = b;
 		this.c = c;
 		this.d = d;
+		for(double i = 0; i <= 1; i += DELTA) {
+			double[] s = drivetrainDelta(i);
+			maxWheelSpeed = Math.max(maxWheelSpeed, Math.max(s[0], s[1]));
+		}
 	}
 
+	public double getMaxWheelSpeed() {
+		return maxWheelSpeed;
+	}
+	
 	public double[] evaluate(double t) {
 		double u = (1-t);
 		double n1 = 3 * t * Math.pow(u, 2);

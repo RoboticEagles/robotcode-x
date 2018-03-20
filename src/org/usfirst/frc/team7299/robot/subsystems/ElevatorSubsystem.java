@@ -1,12 +1,12 @@
 package org.usfirst.frc.team7299.robot.subsystems;
 
-import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 
 public class ElevatorSubsystem extends Subsystem {
-	Victor elevatorL = new Victor(4);
-	Victor elevatorR = new Victor(3);
+	PWMVictorSPX elevatorL = new PWMVictorSPX(4);
+	PWMVictorSPX elevatorR = new PWMVictorSPX(5);
 	
 	@Override
 	protected void initDefaultCommand() {}

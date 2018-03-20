@@ -6,13 +6,10 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
 
 public class TeleopCommand extends Command {
-	public final double accel = 0.02;
-	public boolean slowmode = false;
-	public boolean isols = false;
-	public boolean rsols = false;
-	public boolean asols = false;
-	public double speedL = 0;
-	public double speedR = 0;
+	//private boolean slowmode = false;
+	//private boolean isols = false;
+	//private boolean rsols = false;
+	//private boolean asols = false;
 	public boolean inflating = false;
 
     public TeleopCommand() {
@@ -29,23 +26,32 @@ public class TeleopCommand extends Command {
     		boolean BA = j.getRawButton(1);
     		boolean BB = j.getRawButton(2);
     		boolean BX = j.getRawButton(3);
+    		boolean BY = j.getRawButton(4);
     		double X1 = j.getRawAxis(0);
+    		double YI = 0.5 - j.getRawAxis(1)/2.0;
     		double POV = j.getPOV();
-    		double SL = (BX? Math.pow(X1, 1/3) * -.35
-    				:((BA? 1 : (BB? -1 : 0))
-    				* Math.min(1, 1 - 2 * Math.pow(X1, 1/3) * .35)));
-    		double SR = (BX? Math.pow(X1, 1/3) * .35
-    				:((BA? 1 : (BB? -1 : 0))
-				* Math.min(1, 1 + 2 * Math.pow(X1, 1/3) * .35)));
-		if(speedR < SR) speedR = Math.round(speedR * 100) / 100 + accel;
-		else if(speedR > SR) speedR = Math.round(speedR * 100) / 100 - accel;
-		if(speedL < SL) speedL = Math.round(speedL * 100) / 100 + accel;
-		else if(speedL > SL) speedL = Math.round(speedL * 100) / 100 - accel;
-		
+    		if(BY || j.getRawButtonReleased(3)) {
+    			Robot.drivetrain.forceSetLeftSpeed(0);
+    			Robot.drivetrain.forceSetRightSpeed(0);
+    			Robot.drivetrain.targetSpeedL = 0;
+    			Robot.drivetrain.targetSpeedR = 0;
+    		} else {
+    			double SL = (BX? Math.cbrt(X1) * 0.35
+    					:( (BA? YI : (BB? -YI : 0.0) )
+    					* Math.min(1.0, 1.0 + 2.0 * 0.35 * Math.cbrt(X1) * (BB? -1 : 1))) );
+    			double SR = (BX? Math.cbrt(X1) * -0.35
+    					:( (BA? YI : (BB? -YI : 0.0) )
+    					* Math.min(1.0, 1.0 - 2.0 * 0.35 * Math.cbrt(X1) * (BB? -1 : 1))) );
+        		Robot.drivetrain.setLeftSpeed(SL);
+        		Robot.drivetrain.setRightSpeed(SR);	
+    		}
+    		
 		if(POV == 90) {
-			Robot.elevator.set(1);
-		} else if (POV == 270) {
 			Robot.elevator.set(-1);
+		} else if (POV == 270) {
+			Robot.elevator.set(1);
+		} else {
+			Robot.elevator.set(0);
 		}
     }
 
