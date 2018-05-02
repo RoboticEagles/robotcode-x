@@ -7,41 +7,27 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class PneumaticSubsystem extends Subsystem {
 	Compressor compressor = new Compressor();
-	DoubleSolenoid intakeSolenoid = new DoubleSolenoid(0, 1);
-	DoubleSolenoid rampSolenoid = new DoubleSolenoid(2, 3);
-	DoubleSolenoid alignerSolenoid = new DoubleSolenoid(4, 5);
+	DoubleSolenoid intakeSolenoid = new DoubleSolenoid(1, 0);
+	DoubleSolenoid rampSolenoid = new DoubleSolenoid(3, 2);
 	
 	@Override
 	protected void initDefaultCommand() {
-		compressor.stop();
 		compressor.setClosedLoopControl(true);
-		intakeSolenoid.set(Value.kForward);
-		rampSolenoid.set(Value.kForward);
-		alignerSolenoid.set(Value.kReverse);
-	}
-	
-	public void setInflating(boolean y) {
-		if(y) {
-			compressor.start();
-		} else {
-			compressor.stop();
-		}
+		compressor.start();
+		intakeSolenoid.set(Value.kReverse);
+		rampSolenoid.set(Value.kReverse);
 	}
 	
 	public void setIntake(boolean y) {
 		intakeSolenoid.set(y ? Value.kForward : Value.kReverse);
 	}
 
+	public void start() {
+		compressor.setClosedLoopControl(true);
+	}
+	
 	public void setRamp(boolean y) {
 		rampSolenoid.set(y ? Value.kForward : Value.kReverse);
-	}
-	
-	public void setAligner(boolean y) {
-		alignerSolenoid.set(y ? Value.kForward : Value.kReverse);
-	}
-	
-	public void alignerOff() {
-		alignerSolenoid.set(Value.kOff);
 	}
 	
 }

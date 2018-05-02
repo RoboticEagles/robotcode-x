@@ -1,13 +1,13 @@
 package org.usfirst.frc.team7299.robot.subsystems;
 
-import edu.wpi.first.wpilibj.PWMVictorSPX;
+import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 public class DrivetrainSubsystem extends Subsystem {
-	PWMVictorSPX drivetrainFL = new PWMVictorSPX(0);
-	PWMVictorSPX drivetrainFR = new PWMVictorSPX(2);
-	PWMVictorSPX drivetrainBL = new PWMVictorSPX(1);
-	PWMVictorSPX drivetrainBR = new PWMVictorSPX(3);
+	Spark drivetrainFL = new Spark(0);
+	Spark drivetrainFR = new Spark(1);
+	Spark drivetrainBL = new Spark(2);
+	Spark drivetrainBR = new Spark(3);
 	public double targetSpeedL = 0;
 	public double targetSpeedR = 0;
 	private double currentSpeedL = 0;
@@ -16,9 +16,8 @@ public class DrivetrainSubsystem extends Subsystem {
     public void initDefaultCommand() {}
 
     public void forceSetLeftSpeed(double s) {
-		//System.out.println("CURRENT: " + currentSpeedL + " || TARGET: " + targetSpeedL);
-    		drivetrainFL.set(s);
-    		drivetrainBL.set(s);
+    		drivetrainFL.set(s * .95);
+    		drivetrainBL.set(s * .95);
     		currentSpeedL = s;
     }
     
@@ -37,8 +36,8 @@ public class DrivetrainSubsystem extends Subsystem {
     }
 
     public void setSpeed(double s) {
-    		setLeftSpeed(s*0.96);
-    		setRightSpeed(s*0.96);
+    		setLeftSpeed(s);
+    		setRightSpeed(s);
     }
 
     public void setLeftSpeed(double s) {
@@ -54,5 +53,5 @@ public class DrivetrainSubsystem extends Subsystem {
     public void fixSpeed() {
     		targetSpeedL = currentSpeedL;
     		targetSpeedR = currentSpeedR;
-    }
+}
 }

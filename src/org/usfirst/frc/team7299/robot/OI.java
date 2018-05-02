@@ -9,8 +9,6 @@ package org.usfirst.frc.team7299.robot;
 
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.buttons.Button;
-import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
 /**
  * This class is the glue that binds the controls on the physical operator
@@ -23,13 +21,16 @@ public class OI {
 	// You create one by telling it which joystick it's on and which button
 	// number it is.
 	Joystick j = new Joystick(0);
-	Button buttonA = new JoystickButton(j, 0);
-	Button buttonB = new JoystickButton(j, 1);
-	Button buttonX = new JoystickButton(j, 2);
-	Button buttonY = new JoystickButton(j, 3);
+	Joystick k = new Joystick(1);
 	
-	public Joystick getJoystick() {
-		return j;
+	public Joystick getJoystick(int id) {
+		if(id == 0) {
+			return j;
+		} else if(id == 1) {
+			return k;
+		} else {
+			return null;
+		}
 	}
 
 	// There are a few additional built in buttons you can use. Additionally,

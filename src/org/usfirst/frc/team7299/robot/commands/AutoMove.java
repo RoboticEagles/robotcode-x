@@ -1,59 +1,84 @@
 package org.usfirst.frc.team7299.robot.commands;
 
 import org.usfirst.frc.team7299.robot.Robot;
-import org.usfirst.frc.team7299.util.BezierMovement;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Preferences;
+
+//import com.kauailabs.navx.frc.AHRS;
+
 import edu.wpi.first.wpilibj.command.Command;
+//import edu.wpi.first.wpilibj.I2C;
 
 public class AutoMove extends Command {
     	private double time = 0;
-    	private double expandedTime = 1;
-    	private BezierMovement mvt;
+    	private String pos = "";
+    	private String swp = "";
+    	private boolean done = false;
 	//private AHRS ahrs;
-	private double maxSpeed = 1;
 
     public AutoMove() {
         requires(Robot.drivetrain);
     }
 
-    protected void initialize() {
-	    //ahrs = new AHRS(I2C.Port.kMXP);
+	protected void initialize() {
+		//ahrs = new AHRS(I2C.Port.kMXP);
+	    Robot.drivetrain.setSpeed(0.4);
+	    pos = Robot.autoPosition.getSelected();
 	    	String msg = DriverStation.getInstance().getGameSpecificMessage();
-	    //ASSUMING LEFT
-	    	if(msg.codePointAt(0) == 'R') {
-	    		double[] a = {0,50};
-	    		double[] b = {-60,120};
-	    		double[] c = {-60,200};
-	    		mvt = new BezierMovement(a,b,c);
-	    	} else if(msg.codePointAt(0) == 'L') {
-	    		double[] a = {0, 30};
-	    		double[] b = {(Robot.width / 2) + 82, 101 - Robot.length - 30};
-	    		double[] c = {(Robot.width / 2) + 82, 101 - Robot.length};
-	    		mvt = new BezierMovement(a,b,c);
-	    	} else {
-	    		double[] a = {0, 50};
-	    		double[] b = {-60, 120};
-	    		double[] c = {-60, 200};
-	    		mvt = new BezierMovement(a,b,c);
+	    	System.out.println("MESSAGE IS: " + msg);
+	    	
+	    	if(msg.length() < 1) {
+	    		if(pos.equals("R")) {
+	    			swp = "L";
+	    		} else if (pos.equals("L")) {
+	    			swp = "R";
+	    		}
+	    } else {
+	    		swp = msg.substring(0,1);
+	    }
+	    	
+	    	if(pos.equals("L") || pos.equals("R")) {
+	    		Robot.drivetrain.setSpeed(0.4);
 	    	}
-	    	maxSpeed = Preferences.getInstance().getDouble("maxSpeed", 1);
-	    expandedTime = mvt.getMaxWheelSpeed() / maxSpeed;
     	}
 
     protected void execute() {
-    		time += 0.2;
-    		if(time >= expandedTime) {
-    			Robot.drivetrain.setSpeed(0);
-    		}
-    		double[] m = mvt.drivetrainDelta(time / expandedTime);
-    		Robot.drivetrain.setLeftSpeed(m[0] / expandedTime / maxSpeed);
-    		Robot.drivetrain.setRightSpeed(m[1] / expandedTime / maxSpeed);
+    		time += 0.02;
+    		if(time >= 7.0) {
+    			if(pos.equals(swp)) {
+    				Robot.conveyor.setSpeed(0);
+    			} else if(!pos.equals("C")) {
+	    			Robot.drivetrain.setSpeed(0);
+    			}
+	    		done = true;
+    		} else if(time >= 6.4 && pos.equals(swp)) {
+			//Robot.conveyor.setSpeed(0.2);
+			Robot.drivetrain.setSpeed(0);
+    		} else if(time >= 5.8 && !pos.equals(swp) && !pos.equals("C")) {
+    			Robot.drivetrain.setSpeed(-0.3);
+    		} else if(time >= 5.2 && !pos.equals(swp) && !pos.equals("C")) {
+ 			if(pos.equals("L")) {
+				Robot.drivetrain.setRightSpeed(0.3);
+				Robot.drivetrain.setLeftSpeed(-0.3);
+			} else {
+				Robot.drivetrain.setRightSpeed(-0.3);
+				Robot.drivetrain.setLeftSpeed(0.3);
+			}
+    		} else if(time >= 4.6 && pos.equals(swp)) {
+        		Robot.drivetrain.setSpeed(-0.3);
+        	} else if(time >= 4 && pos.equals(swp)) {
+ 			if(pos.equals("L")) {
+				Robot.drivetrain.setRightSpeed(0.3);
+				Robot.drivetrain.setLeftSpeed(-0.3);
+			} else {
+				Robot.drivetrain.setRightSpeed(-0.3);
+				Robot.drivetrain.setLeftSpeed(0.3);
+			}
+     	}
     }
 
     protected boolean isFinished() {
-        return (time >= expandedTime) && (Robot.drivetrain.getLeftSpeed() == 0) && (Robot.drivetrain.getRightSpeed() == 0);
+        return (done && Robot.drivetrain.getLeftSpeed() == 0 && Robot.drivetrain.getRightSpeed() == 0);
     }
 
     protected void end() {}

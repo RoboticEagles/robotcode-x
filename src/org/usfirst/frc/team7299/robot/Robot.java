@@ -7,50 +7,57 @@
 
 package org.usfirst.frc.team7299.robot;
 
-import edu.wpi.first.wpilibj.Preferences;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import org.usfirst.frc.team7299.robot.commands.AutoMove;
 import org.usfirst.frc.team7299.robot.commands.TeleopCommand;
-import org.usfirst.frc.team7299.robot.subsystems.ClimberSubsystem;
 import org.usfirst.frc.team7299.robot.subsystems.ConveyorSubsystem;
 import org.usfirst.frc.team7299.robot.subsystems.DrivetrainSubsystem;
-import org.usfirst.frc.team7299.robot.subsystems.ElevatorSubsystem;
 import org.usfirst.frc.team7299.robot.subsystems.IntakeSubsystem;
 import org.usfirst.frc.team7299.robot.subsystems.PneumaticSubsystem;
 
 public class Robot extends TimedRobot {
 	//SendableChooser<Command> m_chooser = new SendableChooser<>();
-	//Command autoCmd;
+	Command autoCmd;
 	Command teleopCmd;
 	
-	private double accel = 0.01;
+	private double accel = 0.02;
 
 	public static DrivetrainSubsystem drivetrain;
-	//public static IntakeSubsystem intake;
-	//public static ConveyorSubsystem conveyor;
-	public static ElevatorSubsystem elevator;
+	public static IntakeSubsystem intake;
+	public static ConveyorSubsystem conveyor;
+	//public static ElevatorSubsystem elevator;
 	//public static ClimberSubsystem climber;
-	//public static PneumaticSubsystem pneumatics;
+	public static PneumaticSubsystem pneumatics;
 	public static OI oi;
-	public static final double width = 10.0;
-	public static final double length = 10.0;
+	
+	public static SendableChooser<String> autoPosition;
 
 	@Override
 	public void robotInit() {
-		Preferences.getInstance().putDouble("maxSpeed", 0.01);
-		
 		drivetrain = new DrivetrainSubsystem();
-		//intake = new IntakeSubsystem();
-		//conveyor = new ConveyorSubsystem();
-		elevator = new ElevatorSubsystem();
+		intake = new IntakeSubsystem();
+		conveyor = new ConveyorSubsystem();
+		//elevator = new ElevatorSubsystem();
 		//climber = new ClimberSubsystem();
-		//pneumatics = new PneumaticSubsystem();
+		pneumatics = new PneumaticSubsystem();
 		oi = new OI();
 		teleopCmd = new TeleopCommand();
-		//chooser.addObject("My Auto", new MyAutoCommand());
-		//SmartDashboard.putData("Auto mode", m_chooser);
+		autoCmd = new AutoMove();
+		CameraServer.getInstance().startAutomaticCapture();
+		
+		autoPosition = new SendableChooser<String>();
+		autoPosition.addDefault("Left", "L");
+		autoPosition.addDefault("Center", "C");
+		autoPosition.addDefault("Right", "R");
+		SmartDashboard.putData("startPos", autoPosition);
+		SmartDashboard.putBoolean("conveyorIsFront", false);
+		SmartDashboard.putBoolean("slowSpin", true);
 	}
 	
 	private void handleAccel() {
@@ -91,13 +98,15 @@ public class Robot extends TimedRobot {
 	
 	@Override
 	public void autonomousInit() {
-		//autoCmd.start();
+		autoCmd.start();
+		pneumatics.start();
 	}
 
 	@Override
 	public void teleopInit() {
-		//autoCmd.cancel();
+		autoCmd.cancel();
 		teleopCmd.start();
+		pneumatics.start();
 	}
 	
 	@Override

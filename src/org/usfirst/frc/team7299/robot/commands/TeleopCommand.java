@@ -4,55 +4,66 @@ import org.usfirst.frc.team7299.robot.Robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TeleopCommand extends Command {
-	//private boolean slowmode = false;
-	//private boolean isols = false;
-	//private boolean rsols = false;
-	//private boolean asols = false;
+	public boolean slowmode = true;
+	public boolean isols = false;
+	public boolean rsols = false;
 	public boolean inflating = false;
+	public boolean inverted = false;
+	
+	public final int buttonA = 1;
+	public final int buttonB = 2;
+	public final int buttonX = 3;
+	public final int buttonY = 4;
+	public final int buttonLB = 5;
+	public final int buttonRB = 6;
+	public final int buttonBack = 7;
+	public final int buttonStart = 8;
+	public final int buttonLS = 9;
+	public final int buttonRS = 10;
 
     public TeleopCommand() {
-        //requires(Robot.conveyor);
+        requires(Robot.conveyor);
         requires(Robot.drivetrain);
-        requires(Robot.elevator);
-        //requires(Robot.intake);
+        requires(Robot.intake);
     }
 
     protected void initialize() {}
 
     protected void execute() {
-    		Joystick j = Robot.oi.getJoystick();
-    		boolean BA = j.getRawButton(1);
-    		boolean BB = j.getRawButton(2);
-    		boolean BX = j.getRawButton(3);
-    		boolean BY = j.getRawButton(4);
-    		double X1 = j.getRawAxis(0);
-    		double YI = 0.5 - j.getRawAxis(1)/2.0;
-    		double POV = j.getPOV();
-    		if(BY || j.getRawButtonReleased(3)) {
-    			Robot.drivetrain.forceSetLeftSpeed(0);
-    			Robot.drivetrain.forceSetRightSpeed(0);
-    			Robot.drivetrain.targetSpeedL = 0;
-    			Robot.drivetrain.targetSpeedR = 0;
-    		} else {
-    			double SL = (BX? Math.cbrt(X1) * 0.35
-    					:( (BA? YI : (BB? -YI : 0.0) )
-    					* Math.min(1.0, 1.0 + 2.0 * 0.35 * Math.cbrt(X1) * (BB? -1 : 1))) );
-    			double SR = (BX? Math.cbrt(X1) * -0.35
-    					:( (BA? YI : (BB? -YI : 0.0) )
-    					* Math.min(1.0, 1.0 - 2.0 * 0.35 * Math.cbrt(X1) * (BB? -1 : 1))) );
-        		Robot.drivetrain.setLeftSpeed(SL);
-        		Robot.drivetrain.setRightSpeed(SR);	
+    		Joystick j = Robot.oi.getJoystick(0);
+    		Joystick k = Robot.oi.getJoystick(1);
+    		if(j.getRawButtonReleased(buttonBack)) {
+    			inverted = !inverted;
     		}
-    		
-		if(POV == 90) {
-			Robot.elevator.set(-1);
-		} else if (POV == 270) {
-			Robot.elevator.set(1);
-		} else {
-			Robot.elevator.set(0);
-		}
+    		if(j.getRawButtonReleased(buttonStart)) slowmode = !slowmode;
+    		double x = j.getRawAxis(0) * (slowmode? 0.45 : 0.75);
+    		double y = -j.getRawAxis(1) * 0.8 * (inverted? -1 : 1);
+    		double pL = ((y + x) / Math.sqrt(2));
+    		double pR = ((y - x) / Math.sqrt(2));
+    		//double iL = ((k.getRawAxis(1) + k.getRawAxis(0)) / Math.sqrt(2));
+    		//double iR = ((k.getRawAxis(1) - k.getRawAxis(0)) / Math.sqrt(2));
+    		//Robot.intake.setLeftSpeed(iL);
+    		//Robot.intake.setRightSpeed(iR);
+    		Robot.intake.setSpeed((k.getRawButton(buttonLB) ? -0.6 : 0.6 * k.getRawAxis(2)));
+    		Robot.conveyor.setSpeed((k.getRawButton(buttonRB) ? -0.35 : 0.75 * k.getRawAxis(3)));
+        	Robot.drivetrain.setLeftSpeed(pL);
+        	Robot.drivetrain.setRightSpeed(pR);
+        	
+        if(k.getRawButtonReleased(buttonA)) {
+        		isols = !isols;
+        		Robot.pneumatics.setIntake(isols);
+        	}
+        	
+        if(k.getRawButtonReleased(buttonB)) {
+        		rsols = !rsols;
+        		Robot.pneumatics.setRamp(rsols);
+        	}
+
+		SmartDashboard.putBoolean("conveyorIsFront", inverted);
+		SmartDashboard.putBoolean("slowSpin", slowmode);
     }
 
     protected boolean isFinished() {
